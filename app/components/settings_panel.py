@@ -1,5 +1,4 @@
 import os
-import threading
 
 from PySide6.QtCore import Qt, Signal, QEvent
 from PySide6.QtWidgets import (
@@ -29,7 +28,6 @@ SPEED_CHOICES = ("Unlimited", "1M", "2M", "5M", "10M")
 
 
 class SettingsPanel(QDialog):
-    updateFinished = Signal(bool, str)
     connectionSaved = Signal(dict)
 
     def __init__(self, settings, parent=None):
@@ -489,24 +487,15 @@ class SettingsPanel(QDialog):
         self.accept()
 
     def _start_engine_update(self):
+        from app.components import update_manager
         self.update_btn.setEnabled(False)
         self.update_btn.setText("Updating...")
-        threading.Thread(target=self._engine_update_worker, daemon=True).start()
-
-    def _engine_update_worker(self):
-        ok, msg = yt_dlp_binary.update()
-        self.updateFinished.emit(ok, msg)
+        self._update_runner = update_manager.run_update(
+            self, on_done=self._on_engine_update_finished
+        )
 
     def _on_engine_update_finished(self, ok, msg):
         self.update_btn.setEnabled(True)
-        self.update_btn.setText("Update engine")
+        self.update_btn.setText(i18n.tr("update_engine"))
         version = yt_dlp_binary.get_version()
         self.engine_label.setText(f"yt-dlp {version or 'not found'}")
-        from PySide6.QtWidgets import QMessageBox
-        if ok:
-            QMessageBox.information(
-                self, "Update engine",
-                (msg or "Engine updated.") + f"\n\nCurrent version: {version}",
-            )
-        else:
-            QMessageBox.warning(self, "Update engine", msg or "Update failed.")

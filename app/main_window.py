@@ -2,6 +2,7 @@ import os
 import re
 import uuid
 
+from PySide6.QtCore import QTimer
 from PySide6.QtGui import QAction, QActionGroup, QGuiApplication
 from PySide6.QtWidgets import (
     QApplication,
@@ -88,6 +89,8 @@ class MainWindow(QMainWindow):
             tb.setChecked(True)
             tb.blockSignals(False)
             self._toggle_dark(True)
+
+        QTimer.singleShot(1500, self._check_engine_update)
 
     def _build_central(self):
         from PySide6.QtWidgets import QWidget, QVBoxLayout
@@ -533,6 +536,38 @@ class MainWindow(QMainWindow):
     def _remember_location(self, location):
         self.selections["save_location"] = location
         save_prefs(self.selections)
+
+    def _check_engine_update(self):
+        from app.components import update_manager
+        from engine import yt_dlp_binary
+        if not yt_dlp_binary.ytdlp_path():
+            return
+        checker = getattr(self, "_update_checker", None)
+        if checker is not None and checker.isRunning():
+            return
+        runner = getattr(self, "_update_runner", None)
+        if runner is not None and runner.isRunning():
+            return
+        self._update_checker = update_manager.UpdateChecker()
+
+        def on_checked(current, latest):
+            if not update_manager.is_newer(current, latest):
+                return
+            runner = getattr(self, "_update_runner", None)
+            if runner is not None and runner.isRunning():
+                return
+            box = QMessageBox(self)
+            box.setIcon(QMessageBox.Information)
+            box.setWindowTitle(i18n.tr("update_available_title"))
+            box.setText(i18n.tr("update_available_text") % (latest, current or "?"))
+            yes = box.addButton(QMessageBox.Yes)
+            box.addButton(QMessageBox.No)
+            box.exec()
+            if box.clickedButton() is yes:
+                self._update_runner = update_manager.run_update(self)
+
+        self._update_checker.checked.connect(on_checked)
+        self._update_checker.start()
 
     def closeEvent(self, event):
         if self.settings.get("confirm_exit", True) and (
