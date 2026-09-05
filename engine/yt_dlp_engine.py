@@ -10,6 +10,9 @@ import urllib.request
 from PySide6.QtCore import QObject, Signal
 
 
+from engine.yt_dlp_binary import CREATE_NO_WINDOW
+
+
 class AbortDownload(Exception):
     pass
 
@@ -388,6 +391,7 @@ class YtDlpEngine(QObject):
                 subprocess.run(
                     ["taskkill", "/F", "/T", "/PID", str(proc.pid)],
                     capture_output=True,
+                    creationflags=CREATE_NO_WINDOW,
                 )
             except Exception:
                 try:

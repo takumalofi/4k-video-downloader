@@ -5,6 +5,8 @@ import urllib.request
 
 from shutil import which
 
+CREATE_NO_WINDOW = getattr(subprocess, "CREATE_NO_WINDOW", 0)
+
 
 def _project_dir():
     return os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -64,7 +66,8 @@ def get_version():
         return None
     try:
         r = subprocess.run(
-            [path, "--version"], capture_output=True, text=True, timeout=30
+            [path, "--version"], capture_output=True, text=True, timeout=30,
+            creationflags=CREATE_NO_WINDOW,
         )
         return (r.stdout or "").strip()
     except Exception:
@@ -83,6 +86,7 @@ def update():
             encoding="utf-8",
             errors="replace",
             timeout=600,
+            creationflags=CREATE_NO_WINDOW,
         )
         out = ((r.stdout or "") + "\n" + (r.stderr or "")).strip()
         return r.returncode == 0, out

@@ -3,6 +3,7 @@ dist/
 build/
 __pycache__/
 *.pyc
+*.zip
 
 # Bundled engines (auto-downloaded on first run / shipped in Releases)
 bin/

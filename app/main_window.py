@@ -82,6 +82,13 @@ class MainWindow(QMainWindow):
         central_lay = self._build_central()
         self._wire_signals()
 
+        if self.selections.get("theme_dark", False):
+            tb = self.toolbar.theme_btn
+            tb.blockSignals(True)
+            tb.setChecked(True)
+            tb.blockSignals(False)
+            self._toggle_dark(True)
+
     def _build_central(self):
         from PySide6.QtWidgets import QWidget, QVBoxLayout
 
@@ -501,6 +508,8 @@ class MainWindow(QMainWindow):
         for widget in QApplication.allWidgets():
             if hasattr(widget, "retheme"):
                 widget.retheme()
+        self.selections["theme_dark"] = dark
+        save_prefs(self.selections)
 
     def _clear_list(self):
         for item in list(self.content.list.items()):

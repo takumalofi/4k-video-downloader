@@ -79,15 +79,16 @@ class SettingsPanel(QDialog):
             btn = QPushButton("  " + label)
             btn.setIcon(icon)
             btn.setCheckable(True)
+            btn.setFocusPolicy(Qt.NoFocus)
             btn.setCursor(Qt.PointingHandCursor)
             btn.setFixedHeight(36)
             btn.setStyleSheet(
                 "QPushButton { text-align:left; border:none; border-radius:4px;"
-                " background:transparent; color:#111418; font-size:14px;"
-                " padding:6px 8px; }"
-                "QPushButton:checked { background:%s; font-weight:700; color:#000000; }"
-                "QPushButton:hover:!checked { background:%s; }"
-                % (c["hover"], c["menu_hover"])
+                " background:transparent; color:%s; font-size:14px;"
+                " padding:6px 8px; outline:none; }" % c["text"]
+                + "QPushButton:checked { background:%s; font-weight:700; color:%s; }"
+                % (c["hover"], c["text_strong"])
+                + "QPushButton:hover:!checked { background:%s; }" % c["menu_hover"]
             )
             btn.clicked.connect(lambda checked=False, k=key: self._switch_page(k))
             side_lay.addWidget(btn)
@@ -143,8 +144,8 @@ class SettingsPanel(QDialog):
     def _page_title(self, text):
         title = QLabel(text)
         title.setStyleSheet(
-            "color:#000000; font-size:18px; font-weight:600;"
-            " background:transparent;"
+            "color:%s; font-size:18px; font-weight:600;"
+            " background:transparent;" % theme.colors()["text_strong"]
         )
         return title
 
