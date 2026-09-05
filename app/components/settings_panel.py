@@ -15,6 +15,7 @@ from PySide6.QtWidgets import (
     QFrame,
     QSizePolicy,
     QFileDialog,
+    QMessageBox,
 )
 
 from app import theme
@@ -207,7 +208,7 @@ class SettingsPanel(QDialog):
 
         self.engine_label = QLabel(f"yt-dlp {yt_dlp_binary.get_version() or 'not found'}")
         self.engine_label.setStyleSheet(f"color:{c['text']}; font-size:13px; background:transparent;")
-        self.update_btn = QPushButton(i18n.tr("update_engine"))
+        self.update_btn = QPushButton(i18n.tr("check_updates"))
         self.update_btn.setObjectName("settingsBtn")
         self.update_btn.setCursor(Qt.PointingHandCursor)
         self.update_btn.clicked.connect(self._start_engine_update)
@@ -488,14 +489,32 @@ class SettingsPanel(QDialog):
 
     def _start_engine_update(self):
         from app.components import update_manager
+        checker = getattr(self, "_update_checker", None)
+        if checker is not None and checker.isRunning():
+            return
         self.update_btn.setEnabled(False)
-        self.update_btn.setText("Updating...")
-        self._update_runner = update_manager.run_update(
-            self, on_done=self._on_engine_update_finished
-        )
+        self.update_btn.setText(i18n.tr("checking_updates"))
+        self._update_checker = update_manager.UpdateChecker()
+
+        def on_checked(current, latest):
+            self.update_btn.setEnabled(True)
+            self.update_btn.setText(i18n.tr("check_updates"))
+            if not update_manager.is_newer(current, latest):
+                QMessageBox.information(
+                    self,
+                    i18n.tr("update_check_title"),
+                    i18n.tr("engine_up_to_date") % (latest or current or "?"),
+                )
+                return
+            self._update_runner = update_manager.run_update(
+                self, on_done=self._on_engine_update_finished
+            )
+
+        self._update_checker.checked.connect(on_checked)
+        self._update_checker.start()
 
     def _on_engine_update_finished(self, ok, msg):
         self.update_btn.setEnabled(True)
-        self.update_btn.setText(i18n.tr("update_engine"))
+        self.update_btn.setText(i18n.tr("check_updates"))
         version = yt_dlp_binary.get_version()
         self.engine_label.setText(f"yt-dlp {version or 'not found'}")
