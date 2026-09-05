@@ -1,0 +1,15 @@
+# Build artifacts
+dist/
+build/
+__pycache__/
+*.pyc
+
+# Bundled engines (auto-downloaded on first run / shipped in Releases)
+bin/
+ffmpeg/
+
+# Local settings
+prefs.ini
+
+# PyInstaller
+*.spec.bak
