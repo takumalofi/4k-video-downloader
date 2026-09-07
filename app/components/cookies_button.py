@@ -1,4 +1,4 @@
-from PySide6.QtCore import Qt, Signal
+from PySide6.QtCore import Qt, Signal, QPoint
 from PySide6.QtWidgets import QPushButton, QMenu, QWidgetAction
 
 from app.icons import cookie_icon, _txt
@@ -20,8 +20,11 @@ class CookiesButton(QPushButton):
         self._browser = "None"
         self._rows = {}
         self._build_menu()
-        self.setMenu(self._menu)
+        self.clicked.connect(self._open_menu)
         self._update()
+
+    def _open_menu(self):
+        self._menu.exec(self.mapToGlobal(QPoint(0, self.height() + 4)))
 
     def restore(self, browser):
         self._apply(browser)
