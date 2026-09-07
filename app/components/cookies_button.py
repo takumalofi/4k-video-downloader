@@ -1,7 +1,7 @@
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtWidgets import QPushButton, QMenu, QWidgetAction
 
-from app.icons import key_icon, _txt
+from app.icons import cookie_icon, _txt
 from app.widgets.menu_row import MenuRow
 from app import i18n
 
@@ -53,7 +53,7 @@ class CookiesButton(QPushButton):
         self._update()
 
     def _update(self):
-        self.setIcon(key_icon(18, _txt()))
+        self.setIcon(cookie_icon(18, _txt()))
         self.setToolTip(f"{i18n.tr('cookies_short')}: {self._browser}")
 
     def retheme(self):

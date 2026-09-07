@@ -316,6 +316,31 @@ def key_icon(size=20, color=GREEN):
     return QIcon(pm)
 
 
+def cookie_icon(size=18, color=None):
+    if color is None:
+        color = _txt()
+    pm = _pm(size)
+    p = QPainter(pm)
+    p.setRenderHint(QPainter.Antialiasing)
+    fill = QColor(color)
+    fill.setAlpha(30)
+    body = QPainterPath()
+    body.addEllipse(QPointF(10.4, 10.6), 7.4, 7.4)
+    bite = QPainterPath()
+    bite.addEllipse(QPointF(16.9, 4.5), 3.9, 3.9)
+    shape = body.subtracted(bite)
+    p.fillPath(shape, QBrush(fill))
+    p.strokePath(shape, _pen(color, 1.6))
+    p.setPen(_pen(color, 1.0))
+    p.setBrush(QBrush(color))
+    for cx, cy, r in ((7.2, 8.2, 1.15), (10.8, 12.6, 1.5), (7.9, 13.6, 0.9), (12.3, 7.4, 0.75)):
+        p.drawEllipse(QPointF(cx, cy), r, r)
+    for cx, cy, r in ((18.7, 9.3, 0.55), (20.3, 6.9, 0.45)):
+        p.drawEllipse(QPointF(cx, cy), r, r)
+    p.end()
+    return QIcon(pm)
+
+
 def sparkle_icon(size=16, color=GREEN):
     pm = _pm(size)
     p = QPainter(pm)
