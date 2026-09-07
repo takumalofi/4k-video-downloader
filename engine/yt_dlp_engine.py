@@ -162,20 +162,17 @@ def _video_format(quality, fps, codec):
 
     def fmt(conds):
         selector = "bestvideo[" + "][".join(conds) + "]" if conds else "bestvideo"
-        return selector + "+bestaudio"
+        return selector + "+bestaudio[acodec^=mp4a]"
 
     chain = [fmt(conditions())]
     if codec_prefix:
         chain.append(fmt(conditions(use_codec=False)))
     if fps_cap:
         chain.append(fmt(conditions(use_fps=False)))
-    if height or fps_cap or codec_prefix:
-        chain.append("bestvideo+bestaudio")
-        if height:
-            chain.append(f"best[height<={height}]")
-        chain.append("best")
-    else:
-        chain.append("best")
+    chain.append("bestvideo+bestaudio")
+    if height:
+        chain.append(f"best[height<={height}]")
+    chain.append("best")
     return chain
 
 
