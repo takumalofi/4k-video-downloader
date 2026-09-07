@@ -1,4 +1,4 @@
-from PySide6.QtCore import Qt, Signal, QPoint
+from PySide6.QtCore import Qt, Signal, QPoint, QSize
 from PySide6.QtWidgets import QPushButton, QMenu, QWidgetAction
 
 from app.icons import cookie_icon, _txt
@@ -21,6 +21,7 @@ class CookiesButton(QPushButton):
         self._rows = {}
         self._build_menu()
         self.clicked.connect(self._open_menu)
+        self.setIconSize(QSize(18, 18))
         self._update()
 
     def _open_menu(self):
