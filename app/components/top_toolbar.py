@@ -7,7 +7,7 @@ from app.components.quality_dropdown import QualityDropdown
 from app.components.platform_dropdown import PlatformDropdown
 from app.components.save_location_dropdown import SaveLocationDropdown
 from app.components.theme_toggle_button import ThemeToggleButton
-from app.components.cookies_dropdown import CookiesDropdown
+from app.components.cookies_button import CookiesButton
 from app import theme
 
 
@@ -56,9 +56,9 @@ class TopToolbar(QFrame):
 
         lay.addStretch()
 
-        self.cookies_dd = CookiesDropdown()
-        self.cookies_dd.cookiesChanged.connect(self.cookiesChanged.emit)
-        lay.addWidget(self.cookies_dd)
+        self.cookies_btn = CookiesButton()
+        self.cookies_btn.cookiesChanged.connect(self.cookiesChanged.emit)
+        lay.addWidget(self.cookies_btn)
 
         self.theme_btn = ThemeToggleButton()
         lay.addWidget(self.theme_btn)

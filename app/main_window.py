@@ -157,7 +157,7 @@ class MainWindow(QMainWindow):
         self.toolbar.settingsRequested.connect(self._open_settings)
         self.toolbar.theme_btn.themeToggled.connect(self._toggle_dark)
         self.toolbar.cookiesChanged.connect(self._set_cookies_browser)
-        self.toolbar.cookies_dd.restore(self.selections.get("cookies_browser", "None"))
+        self.toolbar.cookies_btn.restore(self.selections.get("cookies_browser", "None"))
 
         self.toolbar.modeChanged.connect(self._remember_mode)
         self.toolbar.platformChanged.connect(self._remember_platform)
