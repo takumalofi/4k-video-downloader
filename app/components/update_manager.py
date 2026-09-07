@@ -9,8 +9,14 @@ class UpdateChecker(QThread):
     checked = Signal(str, str)
 
     def run(self):
+        if yt_dlp_binary.is_cancelled():
+            return
         current = yt_dlp_binary.get_version() or ""
+        if yt_dlp_binary.is_cancelled():
+            return
         tag, _url, _size = yt_dlp_binary.fetch_latest_release()
+        if yt_dlp_binary.is_cancelled():
+            return
         self.checked.emit(current, tag or "")
 
 
@@ -27,6 +33,8 @@ class UpdateRunner(QThread):
             self.progressed.emit(pct, status)
 
         ok, msg = yt_dlp_binary.download_update(cb, force=self.force)
+        if yt_dlp_binary.is_cancelled():
+            return
         self.done.emit(ok, msg)
 
 

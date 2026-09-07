@@ -583,6 +583,16 @@ class MainWindow(QMainWindow):
             if answer != QMessageBox.Yes:
                 event.ignore()
                 return
+        from engine import yt_dlp_binary
+        threads = [
+            getattr(self, "_update_checker", None),
+            getattr(self, "_update_runner", None),
+        ]
+        running = [t for t in threads if t is not None and t.isRunning()]
+        if running:
+            yt_dlp_binary.request_cancel()
+            for t in running:
+                t.wait(5000)
         save_prefs(self.selections)
         super().closeEvent(event)
     def _set_video_codec(self, codec):

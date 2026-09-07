@@ -83,6 +83,13 @@ QPushButton#ghostBtn {{ border:none; background:transparent; border-radius:4px; 
 QPushButton#ghostBtn:hover {{ background:{c['hover']}; }}
 QPushButton#ghostBtn:pressed {{ background:{c['border_soft']}; }}
 
+QMessageBox, QMessageBox QLabel {{ background:{c['bg']}; color:{c['text']}; }}
+QMessageBox QPushButton {{ background:{c['panel2']}; color:{c['text_strong']};
+ border:1px solid {c['border']}; border-radius:4px; padding:5px 16px; min-width:64px; min-height:22px; }}
+QMessageBox QPushButton:default {{ background:{PRIMARY}; color:#FFFFFF; border:1px solid {PRIMARY}; font-weight:600; }}
+QMessageBox QPushButton:hover {{ border-color:{PRIMARY}; }}
+QMessageBox QPushButton:pressed {{ background:{PRIMARY_PRESSED}; }}
+
 QScrollBar:vertical {{ background:transparent; width:10px; margin:2px; }}
 QScrollBar::handle:vertical {{ background:{c['scroll_handle']}; border-radius:5px; min-height:30px; }}
 QScrollBar::handle:vertical:hover {{ background:{c['scroll_handle_hover']}; }}

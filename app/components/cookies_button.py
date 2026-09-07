@@ -26,6 +26,9 @@ class CookiesButton(QPushButton):
 
     def _open_menu(self):
         self._menu.exec(self.mapToGlobal(QPoint(0, self.height() + 4)))
+        self.setDown(False)
+        self.setAttribute(Qt.WA_UnderMouse, False)
+        self.update()
 
     def restore(self, browser):
         self._apply(browser)

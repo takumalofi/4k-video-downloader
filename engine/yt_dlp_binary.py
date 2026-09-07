@@ -2,11 +2,22 @@ import json
 import os
 import subprocess
 import sys
+import threading
 import urllib.request
 
 from shutil import which
 
 CREATE_NO_WINDOW = getattr(subprocess, "CREATE_NO_WINDOW", 0)
+
+_cancel = threading.Event()
+
+
+def request_cancel():
+    _cancel.set()
+
+
+def is_cancelled():
+    return _cancel.is_set()
 
 
 def _project_dir():
@@ -143,6 +154,8 @@ def download_update(progress_cb=None, force=False):
             total = size or int(resp.headers.get("Content-Length") or 0)
             received = 0
             while True:
+                if is_cancelled():
+                    break
                 chunk = resp.read(1 << 15)
                 if not chunk:
                     break
@@ -150,6 +163,12 @@ def download_update(progress_cb=None, force=False):
                 received += len(chunk)
                 pct = int(received * 100 / total) if total else 0
                 notify(pct, f"{_fmt_bytes(received)} / {_fmt_bytes(total)}")
+        if is_cancelled():
+            try:
+                os.remove(tmp)
+            except Exception:
+                pass
+            return False, "cancelled"
         os.replace(tmp, BUNDLED_PATH)
     except Exception as exc:
         try:
