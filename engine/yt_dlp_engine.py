@@ -484,7 +484,8 @@ class YtDlpEngine(QObject):
                     raise AbortDownload()
                 if proc.returncode == 0 and out_path:
                     self.completedInfo.emit(
-                        task_id, self._collect_meta(task_id, out_path, quality, fps)
+                        task_id,
+                        self._collect_meta(task_id, out_path, quality, fps, mode=mode),
                     )
                     self.stateChanged.emit(task_id, "completed", out_path)
                     return True
@@ -526,7 +527,7 @@ class YtDlpEngine(QObject):
             task_id, pct, speed or 0.0, eta, total
         )
 
-    def _collect_meta(self, task_id, path, quality=None, fps=None):
+    def _collect_meta(self, task_id, path, quality=None, fps=None, mode=None):
         entry = self._meta_store.get(task_id, {})
         meta = {}
         meta["duration"] = entry.get("duration")
@@ -535,15 +536,27 @@ class YtDlpEngine(QObject):
             size = os.path.getsize(path)
         meta["size"] = size
         meta["ext"] = os.path.splitext(path)[1].lstrip(".").lower() if path else ""
-        height = entry.get("height")
-        if not height and quality in _VIDEO_HEIGHT and quality != "Best":
-            height = _VIDEO_HEIGHT[quality]
-        meta["height"] = height
-        fps_val = entry.get("fps")
-        if not fps_val and fps and fps != "Highest":
-            digits = "".join(ch for ch in fps if ch.isdigit())
-            fps_val = int(digits) if digits else None
-        meta["fps"] = fps_val
+        if mode == "audio":
+            meta["height"] = None
+            meta["fps"] = None
+        else:
+            req_height = (
+                _VIDEO_HEIGHT.get(quality) if quality and quality != "Best" else None
+            )
+            src_height = entry.get("height")
+            if req_height and src_height:
+                meta["height"] = min(req_height, src_height)
+            else:
+                meta["height"] = req_height or src_height
+            req_fps = None
+            if fps and fps != "Highest":
+                digits = "".join(ch for ch in fps if ch.isdigit())
+                req_fps = int(digits) if digits else None
+            src_fps = entry.get("fps")
+            if req_fps and src_fps:
+                meta["fps"] = min(req_fps, src_fps)
+            else:
+                meta["fps"] = req_fps or src_fps
         meta["uploader"] = entry.get("uploader") or ""
         self._meta_store.pop(task_id, None)
         return meta
@@ -653,7 +666,8 @@ class YtDlpEngine(QObject):
                     if not path:
                         path = ydl.prepare_filename(info)
                 self.completedInfo.emit(
-                    task_id, self._collect_meta(task_id, path, quality, fps)
+                    task_id,
+                    self._collect_meta(task_id, path, quality, fps, mode=mode),
                 )
                 self.stateChanged.emit(task_id, "completed", path)
             except AbortDownload:
