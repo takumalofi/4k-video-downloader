@@ -22,6 +22,7 @@ DEFAULTS = {
     "platform": "Windows",
     "save_location": "D:/",
     "theme_dark": False,
+    "cookies_browser": "None",
 }
 
 

@@ -11,6 +11,7 @@ class ThemeToggleButton(QPushButton):
         super().__init__(parent)
         self.setObjectName("ghostBtn")
         self.setCheckable(True)
+        self.setFocusPolicy(Qt.NoFocus)
         self.setFixedSize(34, 34)
         self.setCursor(Qt.PointingHandCursor)
         self.setIconSize(QSize(18, 18))

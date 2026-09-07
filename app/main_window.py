@@ -156,6 +156,8 @@ class MainWindow(QMainWindow):
         self.toolbar.locationChanged.connect(lambda l: setattr(self, "save_location", l))
         self.toolbar.settingsRequested.connect(self._open_settings)
         self.toolbar.theme_btn.themeToggled.connect(self._toggle_dark)
+        self.toolbar.cookiesChanged.connect(self._set_cookies_browser)
+        self.toolbar.cookies_dd.restore(self.selections.get("cookies_browser", "None"))
 
         self.toolbar.modeChanged.connect(self._remember_mode)
         self.toolbar.platformChanged.connect(self._remember_platform)
@@ -588,6 +590,12 @@ class MainWindow(QMainWindow):
         self.selections["video_codec"] = codec
         save_prefs(self.selections)
         self._on_prefs_changed()
+
+    def _set_cookies_browser(self, browser):
+        self.selections["cookies_browser"] = browser
+        self.settings["cookies_browser"] = browser
+        self.engine.cookies_browser = browser
+        save_prefs(self.selections)
 
     def _set_audio_codec(self, codec):
         self.audio_codec = codec

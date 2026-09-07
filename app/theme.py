@@ -79,7 +79,7 @@ QPushButton {{ color:{c['text']}; }}
 QPushButton#ddBtn {{ background:transparent; border:none; border-radius:4px; padding:0 6px; }}
 QPushButton#ddBtn:hover {{ background:{c['hover']}; }}
 QPushButton#ddBtn::menu-indicator {{ image:none; width:0; }}
-QPushButton#ghostBtn {{ border:none; background:transparent; border-radius:4px; padding:7px; }}
+QPushButton#ghostBtn {{ border:none; background:transparent; border-radius:4px; padding:7px; outline:none; }}
 QPushButton#ghostBtn:hover {{ background:{c['hover']}; }}
 QPushButton#ghostBtn:pressed {{ background:{c['border_soft']}; }}
 
